@@ -1,0 +1,83 @@
+replicaCount: 1
+
+image:
+  repository: murali325/crud_app_backend
+  pullPolicy: IfNotPresent
+  tag: v3
+
+database:
+  host: "gateway01.ap-southeast-1.prod.aws.tidbcloud.com"
+  port: "4000"
+  user: "4ZrUUWFVXrLrXUg.root"
+  password: "wIdAtRb3s0xhjPhL"
+  name: "test"
+
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 4000
+
+ingress:
+  enabled: true
+  className: alb
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/backend-protocol: HTTP
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+  hosts:
+    - host: frontend-backend.example.com  # Same host for shared ALB
+      paths:
+        - path: /api
+          pathType: Prefix
+  tls: []
+
+resources: {}
+
+livenessProbe:
+  tcpSocket:
+    port: 4000
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  timeoutSeconds: 10
+  failureThreshold: 3
+
+readinessProbe:
+  tcpSocket:
+    port: 4000
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+
+volumes: []
+volumeMounts: []
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
